@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Go AES Encryption/Decryption</title>
+    <meta name="robots" content="noindex">
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+    <!--Vue.js-->
+    <!-- <script type="text/javascript" src="/js/vuemin.js"></script> -->
+    <script type="text/javascript" src="/js/vue.js"></script>
+
+    <!--VoiceIt Bulma-->
+    <link rel="stylesheet" type="text/css" href="/css/custom-bulmaswatch.css">
+
+    <!--Bulma for Switch-->
+    <link rel="stylesheet" type="text/css" href="/css/bulma-switch.min.css">
+
+    <!--Axios for HTTP Requests-->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!--Sweet Alerts-->
+    <script src="/js/sweetalert2.js"></script>
+  </head>
+
+
+  <style>
+    label, input, body {
+      font-family: Helvetica;
+    }
+  </style>
+
+  <body>
+
+    <div id="app">
+      <div style="margin-left: auto; margin-right: auto; max-width: 80%; margin-top: 3%"> <!--Centered Content-->
+        <p class="title">Go AES Logic</p>
+
+        <div class="is-center" style="margin-top: 20px;" style="text-align: center;">
+          <p class="is-size-4">AES Encrypt/Decrypt File</p>
+          <p>Will use Nonce/IV <code>BfVsfgErXsbfiA00</code></p>
+          <p>And Encryption Key <code>fx6v22kwCjm9oasmMnymhpVJa6H4Xpkc</code></p>
+          <div class="columns" style="margin-top: 20px;">
+            <div class="column is-one-half"><!--Left Half-->
+              <div class="file">
+                <label class="file-label">
+                <input id="file-input" class="file-input" type="file" name="file" @change="storeAESBlob">
+                <span class="file-cta">
+                <span class="file-icon">
+                <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                Choose a file…
+                </span>
+                </span>
+                </label>
+              </div>
+            </div>
+          </div> <!--div class="columns" style="margin-top: 20px;"-->
+
+          <button v-if="aes.file !== null && aes.fileName !== ''" class="button" @click="aesDecrypt()">Decrypt</button>
+          <button v-if="aes.file !== null && aes.fileName !== ''" class="button" @click="aesEncrypt()">Encrypt</button>
+
+        </div><!--v-if="currentTab==='blowfishButton'" End-->
+
+
+      </div> <!--Centered Content End-->
+    </div> <!--id="app"-->
+
+    <!--Vue.js Logic-->
+    <script type="text/javascript" src="/js/script.js"></script>
+
+  </body>
+
+</html>
