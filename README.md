@@ -23,14 +23,35 @@ Because I my company requires a common AES encryption standard in multiple langu
 | Java | ✅ | ✅  |
 | Node.js | ❌ | ✅  |
 
-Now the main reason why I know the problem is must be in Node encryption is because of the following edge case testing:
+Now the main reason why I know the problem is must be in Node encryption is because of the following set of circumstances:
 
-Go and Java have bidirectional encryption/decryption capabilities (of course provided...)
+Go and Java have bidirectional encryption/decryption capabilities (of course provided I am using the same encryption key). Furthermore, [node_aes/decrypt.js](node_aes/decrypt.js) is able to decrypt files that were encrypted in Go and Java.
 
-Screen shot file diffs for encrypted files
+To make it easier for people to test this themselves, I have written a Go based encryption/decryption web interface at [https://go-aes.voiceit.io](https://go-aes.voiceit.io). This will allow you to upload a file of your choice, and download either the encrypted form, or decrypted form of that same file. Please use this interface to encrypt a file, then decrypt that same file using [node_aes/decrypt.js](node_aes/decrypt.js):
+
+```
+cd node_aes
+node decrypt.js ./go-encrypted-file
+[will produce ./node-decrypted-go-encrypted-file]
+```
+
+---
+
+Furthermore, a file encrypted by Node.js will fail to decrypt using Node.js (while Go and Java will also fail to decrypt that file):
+
+```
+cd node_aes
+node encrypt.js ./file
+node decrypt.js ./node-encrypted-file
+[will fail]
+```
+
+File diffing a Go encrypted file against the same file encrypted in Node using [vbindiff](https://www.cjmweb.net/vbindiff/), the file is identical until the last 16 bytes where the auth tag gets written.
+
+![vbindiff](https://drive.voiceit.io/files/vbindiff.png)
 
 Any help would be much appreciated. Thank you.
 
 ## *WARNING*
 
-  > If you find the code in my repo useful, and want to use this in your stuff, make sure you use a secure psudo-random character generator to produce the IV/Nonce before putting this in a production environment. I have hardcoded the nonce this in my code so make it easier to run a binary file diff, but in production, you need to generate a new, randomized nonce for every new thing you encrypt. All files using the same nonce breaks the security model of AES encryption.
+  > If you find the code in my repo useful, and want to use this in your stuff, make sure you use a secure psudo-random character generator to produce a new IV/Nonce before putting these encryption methods in your production environments. I have hardcoded the nonce this in this repo to make it easier to run a binary file diffs. But in production, you need to generate a new, randomized nonce for every new thing you encrypt. All files encrypted using the same nonce breaks the security model of AES encryption because of [this](https://crypto.stackexchange.com/questions/26790/how-bad-it-is-using-the-same-iv-twice-with-aes-gcm).
