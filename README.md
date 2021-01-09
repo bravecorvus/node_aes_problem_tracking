@@ -55,6 +55,15 @@ File diffing a Go encrypted file against the same file encrypted in Node using [
 
 ![vbindiff](https://drive.voiceit.io/files/vbindiff.png)
 
+In summary, I have a high degree of certainty that the problem is in the following 2 lines in [node_aes/encrypt.js](node_aes/encrypt.js):
+
+```javascript
+    const tag = cipher.getAuthTag();
+    encrypted += tag;
+```
+
+It could be something I am doing wrong, but I also think it could be a bug in the standard library (which I have never encountered, so I usually default to assuming I screwed something up).
+
 Any help would be much appreciated. Thank you.
 
 ## *WARNING*
