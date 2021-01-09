@@ -1,33 +1,36 @@
 # Node AES GCM Tag Problem
 
-I am unable to use `crypto` library in Node to extract the correct authentication tag when doing 256-bit AES GCM encryption in Node.js.
+Despite being able to write a fully working decryption implementation in Node.js, I am unable to use `crypto` library in Node to extract the correct authentication tag when doing 256-bit AES GCM encryption in Node.js.
 
 The repo contains 2 parts:
 
-1. [go_aes_server](go_aes_server) a Go based server which hosts a web based interface which does AES encryption and decryption properly on files (hosted at [https://go-aes.voiceit.io](https://go-aes.voiceit.io)). And my attempts to write the encryption 
-1. [node_aes](node_aes) My best attempt to implement a Node.js version of the 256-bit AES GCM encyption and decryption.
+1. [go_aes_server](go_aes_server) a Go working based server which hosts a web based interface which does AES encryption and decryption properly on files (hosted at [https://go-aes.voiceit.io](https://go-aes.voiceit.io)). And my attempts to write the encryption 
+1. [node_aes](node_aes) My best attempt to implement a Node.js version of the 256-bit AES GCM encyption and decryption (`encrypt.js` does not work).
 
-Because of how the higher level languages Go, and Java does the auth tag in their respective standard library AES GCM implementation, and Node needs to be able to decrypt data written in Go/Java and vice versa, I cannot change the following format of the encrypted form of the file:
+Because of how the higher level languages Go, and Java does the auth tag in their respective standard library AES GCM implementation, and Node needs to be able to decrypt data written in Go/Java and vice versa, I need to the following format of the encrypted form of the file:
 
 ```
 | Nonce/IV (First 16 bytes) | Ciphertext | Authentication Tag (Last 16 bytes) |
 ```
 
-Also, the tag coming at the end follows the standard specification of encrypted payloads specified in RFC 5116 section 2.1 ([source](https://crypto.stackexchange.com/questions/25249/where-is-the-authentication-tag-stored-in-file-encrypted-using-aes-gcm)). So I see it as fine for our purposes
+In practice, this means that since the decryption works just fine with code that we already have in production, the solution must meet the following condition: `AESEncrypt` must be the direct inverse of `AESDecrypt` without changing the logic of `AESDecrypt`.
 
-Because I my company requires a common AES encryption standard in multiple languages, I have done the following implementations:
+Because I my company requires a common AES encryption standard in multiple languages, I have implemented 256-bit AES GCM encryption/decryption in the following cases:
 
 | *Language* | *Encryption* | *Decryption* |
 | -- | -- | -- |
-| Go | ✅ | ✅  |
-| Java | ✅ | ✅  |
-| Node.js | ❌ | ✅  |
+| Go | ✅ | ✅ |
+| Java | ✅ | ✅ |
+| Node.js | ❌ | ✅ |
 
-Now the main reason why I know the problem is must be in Node encryption is because of the following set of circumstances:
+Now the main reason why I know the problem is in Node.js encryption is because of the following set of circumstances:
 
-Go and Java have bidirectional encryption/decryption capabilities (of course provided I am using the same encryption key). Furthermore, [node_aes/decrypt.js](node_aes/decrypt.js) is able to decrypt files that were encrypted in Go and Java.
+Go and Java have bidirectional encryption/decryption capabilities with each other (of course provided I am using the same encryption key).
 
-To make it easier for people to test this themselves, I have written a Go based encryption/decryption web interface at [https://go-aes.voiceit.io](https://go-aes.voiceit.io). This will allow you to upload a file of your choice, and download either the encrypted form, or decrypted form of that same file. Please use this interface to encrypt a file, then decrypt that same file using [node_aes/decrypt.js](node_aes/decrypt.js):
+Furthermore, [node_aes/decrypt.js](node_aes/decrypt.js) is able to decrypt files that were encrypted in Go and Java.
+
+To make it easier for people to test this themselves, I have written a Go based encryption/decryption web interface at [https://go-aes.voiceit.io](https://go-aes.voiceit.io).
+This will allow you to upload a file of your choice, and download either the encrypted form, or decrypted form of that same file. Please use this interface to encrypt a file, then decrypt that same file using [node_aes/decrypt.js](node_aes/decrypt.js) (Go Encryption-> Node.js Decryption [✅]):
 
 ```
 cd node_aes
@@ -35,9 +38,11 @@ node decrypt.js ./go-encrypted-file
 [will produce ./node-decrypted-go-encrypted-file]
 ```
 
+Furthermore, you will be able to use [https://go-aes.voiceit.io](https://go-aes.voiceit.io) to decrypt a file you encrypted using that same website. (Go Encryption -> Go Decryption [✅])
+
 ---
 
-Furthermore, a file encrypted by Node.js will fail to decrypt using Node.js (while Go and Java will also fail to decrypt that file):
+However, a file encrypted by Node.js will fail to decrypt using Node.js (Node.js Encryption -> Node.js Decryption [❌]) (while Go and Java will also fail to decrypt that file):
 
 ```
 cd node_aes
