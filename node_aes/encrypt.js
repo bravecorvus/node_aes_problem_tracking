@@ -12,7 +12,7 @@ let AESEncrypt = (data, key) => {
     let encrypted = nonce;
     encrypted += cipher.update(encoded, 'binary', 'binary')
     encrypted += cipher.final('binary');
-    const tag = cipher.getAuthTag();
+    const tag = cipher.getAuthTag().toString('binary');
     encrypted += tag;
     return Buffer.from(encrypted, 'binary');
   } catch (ex) {
