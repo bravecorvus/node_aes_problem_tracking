@@ -1,5 +1,7 @@
 # Node AES GCM Tag Problem
 
+**MY ISSUE WAS RESOLVED: (Please see [https://stackoverflow.com/questions/65639698/trouble-with-getting-correct-tag-for-256-bit-aes-gcm-encryption-in-node-js](https://stackoverflow.com/questions/65639698/trouble-with-getting-correct-tag-for-256-bit-aes-gcm-encryption-in-node-js)). I will leave up this repo for posterity.**
+
 Despite being able to write a fully working decryption implementation in Node.js, I am unable to use `crypto` library in Node to extract the correct authentication tag when doing 256-bit AES GCM encryption in Node.js.
 
 The repo contains 2 parts:
